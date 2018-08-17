@@ -4,12 +4,14 @@
 #include <string.h>
 #include <vector>
 #include <fstream>
+#include <limits.h>
 
 
 using namespace std;
 
 bool exitflag = false;
 vector<string> path;
+string H_NAME, U_NAME;
 
 
 vector<string> splitlinebychar(string s, char ch) {
@@ -44,6 +46,22 @@ void processPath() {
 //    for (int i = 0; i < path.size(); ++i) {
 //        cout<<path[i]<<endl;
 //    }
+}
+
+//Sets hostnames and username for terminal
+void setNames() {
+    char hostname[HOST_NAME_MAX];
+    char username[LOGIN_NAME_MAX];
+    gethostname(hostname, HOST_NAME_MAX);
+    string hn(hostname);
+    H_NAME = hn;
+    getlogin_r(username, LOGIN_NAME_MAX);
+    string un(username);
+    U_NAME = un;
+    if(H_NAME == "" && U_NAME == ""){
+        H_NAME = "user";
+        U_NAME = "linux";
+    }
 }
 
 void processCommand(string s) {
@@ -86,18 +104,19 @@ void processCommand(string s) {
         }
         fclose(input);
         wait(NULL);
+        sleep(0.01);
+        cout<<"\n";
     }
 }
 
 int main() {
+    setNames();
     processPath();
     cout << "Linux Shell 1.0\n";
     string cmd;
     while (!exitflag) {
-        cout << "myShell>";
+        cout << U_NAME << '@' << H_NAME << "# ";
         getline(cin, cmd);
-//        cmd="";
-//        cout<<"Got cmd:"<<cmd<<endl;
         processCommand(cmd);
     }
 }
