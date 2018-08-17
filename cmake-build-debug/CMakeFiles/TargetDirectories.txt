@@ -1,0 +1,3 @@
+/home/abhishekr700/CLionProjects/LinuxTerminal/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/abhishekr700/CLionProjects/LinuxTerminal/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/abhishekr700/CLionProjects/LinuxTerminal/cmake-build-debug/CMakeFiles/LinuxTerminal.dir
