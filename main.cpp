@@ -58,7 +58,7 @@ void setNames() {
     getlogin_r(username, LOGIN_NAME_MAX);
     string un(username);
     U_NAME = un;
-    if(H_NAME == "" && U_NAME == ""){
+    if (H_NAME == "" && U_NAME == "") {
         H_NAME = "user";
         U_NAME = "linux";
     }
@@ -82,13 +82,22 @@ void processCommand(string s) {
         dup2(pipes[1], STDOUT_FILENO);
         close(pipes[0]);
         close(pipes[1]);
+
 //        cout<<"forked output\n";
+
         vector<string> cmds = splitlinebychar(s, ' ');
+        char *params[cmds.size()+1];
+        params[0] = (char *) cmds[0].c_str();
+        for (int i = 1; i < cmds.size(); ++i) {
+            params[i] = (char *) cmds[i].c_str();
+        }
+        params[cmds.size()] = NULL;
         string location = findLocation(cmds[0]);
         if (location == "_000_") {
             cout << "Command not found !\n";
         } else
-            execl(location.c_str(), cmds[0].c_str(), (char *) NULL);
+            execv(location.c_str(), params);
+//            execl(location.c_str(), cmds[0].c_str(), (char *) NULL);
         exit(0);
     } else if (p == -1) {
         cout << "error";
@@ -105,7 +114,7 @@ void processCommand(string s) {
         fclose(input);
         wait(NULL);
         sleep(0.01);
-        cout<<"\n";
+        cout << "\n";
     }
 }
 
