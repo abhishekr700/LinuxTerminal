@@ -88,6 +88,19 @@ void processCommand(string s) {
         exitflag = true;
         return;
     }
+
+    /*
+     * Handle background execution of programs.
+     * The bool variable prevents the terminal from waiting for process to exit
+     * Erase is used to remove the trailing '&' from command
+     */
+    bool isBackground = false;
+    vector<string> cmds = splitlinebychar(s, ' ');
+    if (cmds[cmds.size() - 1] == "&") {
+        isBackground = true;
+        cmds.erase(cmds.end() - 1);
+    }
+
 //    cout<<"Forking";
 
     int pipes[2];
@@ -104,7 +117,6 @@ void processCommand(string s) {
 
 //        cout<<"forked output\n";
 
-        vector<string> cmds = splitlinebychar(s, ' ');
         char *params[cmds.size() + 1];
         params[0] = (char *) cmds[0].c_str();
         for (int i = 1; i < cmds.size(); ++i) {
@@ -122,18 +134,20 @@ void processCommand(string s) {
         cout << "error";
         exit(0);
     } else {
-        close(pipes[1]);
-        FILE *input = fdopen(pipes[0], "r");
-        if (input == NULL) perror("Error opening file");
-        char buf[100];
-        while (!feof(input)) {
-            if (fgets(buf, 100, input) == NULL) break;
-            fputs(buf, stdout);
+        if (!isBackground) {
+            close(pipes[1]);
+            FILE *input = fdopen(pipes[0], "r");
+            if (input == NULL) perror("Error opening file");
+            char buf[100];
+            while (!feof(input)) {
+                if (fgets(buf, 100, input) == NULL) break;
+                fputs(buf, stdout);
+            }
+            fclose(input);
+            wait(NULL);
+            sleep(0.01);
+            cout << "\n";
         }
-        fclose(input);
-        wait(NULL);
-        sleep(0.01);
-        cout << "\n";
     }
 }
 
@@ -151,6 +165,7 @@ int main() {
     while (!exitflag) {
         cout << U_NAME << '@' << H_NAME << "# ";
         getline(cin, cmd);
-        processCommand(cmd);
+        if (cmd != "")
+            processCommand(cmd);
     }
 }
