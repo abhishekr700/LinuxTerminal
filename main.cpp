@@ -9,11 +9,15 @@
 
 using namespace std;
 
+/*
+ * Global Vars
+ */
 bool exitflag = false;
 vector<string> path;
 string H_NAME, U_NAME;
 
 
+// This function splits a string into a vector of strings. The char argument is used as a separator
 vector<string> splitlinebychar(string s, char ch) {
     vector<string> str;
     string temp;
@@ -28,6 +32,11 @@ vector<string> splitlinebychar(string s, char ch) {
     return str;
 }
 
+
+/* Iterate through various locations in PATH and return the file location to be used as first
+ * argument in exec() family functions.
+ * Returns "_000_" if no such file is found in PATH
+ */
 string findLocation(string command) {
     ifstream f;
     for (int i = 0; i < path.size(); ++i) {
@@ -39,6 +48,11 @@ string findLocation(string command) {
     return "_000_";
 }
 
+
+/*
+ * Processes the PATH variable and stores the various location into a global vector
+ * of strings
+ */
 void processPath() {
     string pathval = getenv("PATH");
 //    cout<<pathval<<endl;
@@ -47,6 +61,7 @@ void processPath() {
 //        cout<<path[i]<<endl;
 //    }
 }
+
 
 //Sets hostnames and username for terminal
 void setNames() {
@@ -64,6 +79,10 @@ void setNames() {
     }
 }
 
+
+/*
+ * Takes command string as argument and processes it.
+ */
 void processCommand(string s) {
     if (s == "exit") {
         exitflag = true;
@@ -86,7 +105,7 @@ void processCommand(string s) {
 //        cout<<"forked output\n";
 
         vector<string> cmds = splitlinebychar(s, ' ');
-        char *params[cmds.size()+1];
+        char *params[cmds.size() + 1];
         params[0] = (char *) cmds[0].c_str();
         for (int i = 1; i < cmds.size(); ++i) {
             params[i] = (char *) cmds[i].c_str();
@@ -118,10 +137,16 @@ void processCommand(string s) {
     }
 }
 
+
 int main() {
+    //Set hostname & username
     setNames();
+
+    //Process PATH variable
     processPath();
+
     cout << "Linux Shell 1.0\n";
+
     string cmd;
     while (!exitflag) {
         cout << U_NAME << '@' << H_NAME << "# ";
